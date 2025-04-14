@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>除錯頁面 - 新聞什麼</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <style>
+        .debug-header {
+            font-family: monospace;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .article-list {
+            height: 400px;
+            overflow-y: auto;
+        }
+        .model-badge {
+            font-family: monospace;
+            border-left: 3px solid #0d6efd;
+            background-color: #f8f9fa;
+            padding: 0.25rem 0.5rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">首頁</a></li>
+                <li class="breadcrumb-item"><a href="/articles" class="text-decoration-none">文章列表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">除錯頁面</li>
+            </ol>
+        </nav>
+        
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="fs-4">新聞什麼 <span class="badge bg-warning text-dark">幽默AI新聞翻譯</span></h1>
+                <div>
+                    <a href="/articles" class="btn btn-outline-secondary">文章列表</a>
+                    <a href="/" class="btn btn-outline-secondary ms-2">首頁</a>
+                    <a href="/settings" class="btn btn-outline-secondary ms-2"><i class="bi bi-gear"></i> 設定</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-hdd-stack"></i> 系統狀態
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h5 class="debug-header"><i class="bi bi-database"></i> 文章數據</h5>
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    文章總數
+                                    <span class="badge bg-primary rounded-pill">{{ articles|length }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    已分析文章
+                                    <span class="badge bg-success rounded-pill">{{ articles|selectattr('has_summary')|list|length }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    未分析文章
+                                    <span class="badge bg-warning rounded-pill">{{ articles|rejectattr('has_summary')|list|length }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h5 class="debug-header"><i class="bi bi-robot"></i> AI 狀態</h5>
+                            <div class="mb-3">
+                                <div class="fw-bold">當前使用模型：</div>
+                                <span class="badge bg-primary">{{ ai_model }}</span>
+                            </div>
+                            
+                            {% if available_models %}
+                            <div>
+                                <div class="fw-bold">可用模型：</div>
+                                <div>
+                                    {% for model in available_models %}
+                                    <span class="model-badge">{{ model }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-activity"></i> 系統操作
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h5 class="debug-header"><i class="bi bi-gear"></i> 操作</h5>
+                            <div class="d-grid gap-2">
+                                <a href="/articles" class="btn btn-outline-primary">
+                                    <i class="bi bi-list-ul me-2"></i>查看文章列表
+                                </a>
+                                <form action="/crawl" method="post" class="d-grid">
+                                    <button type="submit" class="btn btn-outline-success">
+                                        <i class="bi bi-arrow-repeat me-2"></i>爬取最新新聞
+                                    </button>
+                                </form>
+                                <form action="/clear" method="post" class="d-grid">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="bi bi-trash me-2"></i>清除所有文章
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 class="debug-header"><i class="bi bi-info-circle"></i> 系統資訊</h5>
+                            <div class="code-block">
+                                <code>
+                                    路徑: news-what-Taiwan<br>
+                                    伺服器: Flask<br>
+                                    AI 模型: {{ ai_model }}<br>
+                                    文章儲存: articles.json<br>
+                                    新聞來源: Yahoo 新聞台灣版
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <i class="bi bi-list-check"></i> 文章清單
+            </div>
+            <div class="card-body">
+                <div class="table-responsive article-list">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>標題</th>
+                                <th>來源</th>
+                                <th>分析狀態</th>
+                                <th>動作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for article in articles %}
+                            <tr>
+                                <td><code>{{ article.id }}</code></td>
+                                <td>{{ article.title|truncate(50) }}</td>
+                                <td>{{ article.source|default(article.domain, true) }}</td>
+                                <td>
+                                    {% if article.has_summary %}
+                                    <span class="badge bg-success">已分析</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">未分析</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/article/{{ article.id }}" class="btn btn-sm btn-outline-primary">查看</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

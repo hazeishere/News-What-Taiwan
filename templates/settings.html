@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設定 - 新聞什麼</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <style>
+        .setting-card {
+            transition: all 0.3s;
+        }
+        .setting-card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">首頁</a></li>
+                <li class="breadcrumb-item"><a href="/articles" class="text-decoration-none">文章列表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">設定</li>
+            </ol>
+        </nav>
+
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="fs-4">新聞什麼 <span class="badge bg-warning text-dark">設定</span></h1>
+                <div>
+                    <a href="/articles" class="btn btn-outline-secondary">返回文章列表</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card setting-card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-robot"></i> AI 模型設定
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="alert alert-info" role="alert">
+                                <i class="bi bi-info-circle"></i> 目前使用的模型: <strong>{{ last_used_model }}</strong>
+                                {% if preferred_model %}
+                                <br>
+                                <i class="bi bi-check-circle"></i> 您偏好的模型: <strong>{{ preferred_model }}</strong>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <form action="/settings" method="post">
+                            <div class="mb-3">
+                                <label for="selected_model" class="form-label">選擇您偏好的AI模型</label>
+                                <select class="form-select" id="selected_model" name="selected_model">
+                                    {% for model in available_models %}
+                                    <option value="{{ model }}" {% if model == preferred_model %}selected{% endif %}>{{ model }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">所選模型將用於新聞分析。</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">保存設定</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card setting-card">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="bi bi-info-circle"></i> 關於模型選擇
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">不同模型有不同特點</h5>
+                        <p class="card-text">
+                            各種AI模型在回答品質、速度和能力上有所差異。例如：
+                        </p>
+                        <ul>
+                            <li><strong>GPT 模型</strong> - 通常生成更流暢、更自然的文本</li>
+                            <li><strong>Claude 模型</strong> - 較少幻想，好處理長文本</li>
+                            <li><strong>Gemini 模型</strong> - 多模態理解力較強</li>
+                        </ul>
+                        <p>
+                            嘗試不同模型，找出最適合您需求的選擇！
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

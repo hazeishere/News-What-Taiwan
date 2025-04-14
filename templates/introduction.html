@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新聞什麼 - 幽默AI新聞翻譯</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <style>
+        .feature-icon {
+            font-size: 2rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e5e6 100%);
+            padding: 5rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0.5rem;
+        }
+        .hero-title {
+            font-weight: 700;
+        }
+        .feature-card {
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="fs-4">新聞什麼 <span class="badge bg-warning text-dark">幽默AI新聞翻譯</span></h1>
+                <div>
+                    <a href="/articles" class="btn btn-primary">開始瀏覽</a>
+                    <a href="/debug" class="btn btn-outline-secondary ms-2">除錯頁面</a>
+                    <a href="/settings" class="btn btn-outline-secondary ms-2"><i class="bi bi-gear"></i> 設定</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-5 mb-4 hero-section rounded-3">
+            <div class="container-fluid py-5 text-center">
+                <h1 class="display-5 fw-bold hero-title mb-4">使用 AI 幽默解讀台灣新聞</h1>
+                <p class="fs-4 mb-4">自動爬取 Yahoo 新聞台灣版，使用 AI 分析並用有趣的方式解讀新聞。</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="/articles" class="btn btn-primary btn-lg px-4 me-md-2">查看新聞列表</a>
+                    <form action="/crawl" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-primary btn-lg px-4">爬取最新新聞</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-robot"></i>
+                        </div>
+                        <h3 class="card-title">AI 分析</h3>
+                        <p class="card-text">使用先進的 AI 模型分析新聞內容，提取關鍵實體和主題，確定情感傾向。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-emoji-laughing"></i>
+                        </div>
+                        <h3 class="card-title">幽默翻譯</h3>
+                        <p class="card-text">將複雜的新聞內容轉化為輕鬆有趣的版本，使嚴肅話題更容易理解。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100 feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-newspaper"></i>
+                        </div>
+                        <h3 class="card-title">自動爬取</h3>
+                        <p class="card-text">自動從 Yahoo 新聞台灣版抓取最新頭條，無需手動搜尋新聞。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="mb-3">如何使用</h3>
+                        <ol class="list-group list-group-numbered mb-0">
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">爬取新聞</div>
+                                    點擊「爬取最新新聞」按鈕，從 Yahoo 新聞取得台灣最新頭條新聞
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">瀏覽新聞列表</div>
+                                    查看所有已爬取的新聞文章，帶有簡短摘要和情感分析
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">閱讀 AI 分析</div>
+                                    點擊任一新聞文章，查看其 AI 生成的幽默翻譯、關鍵要點和實體提取
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="mb-3">關於此應用</h3>
+                        <p>「新聞什麼」是一個使用 Flask 和 AI 技術構建的應用程序，旨在以輕鬆有趣的方式呈現台灣新聞。每則新聞都會自動進行以下處理：</p>
+                        <ul>
+                            <li>新聞摘要：提取文章的主要觀點，以簡潔的幾句話概括</li>
+                            <li>幽默翻譯：創建一個輕鬆、幽默的文章版本</li>
+                            <li>主題分類：確定文章的主要類別（政治、科技等）</li>
+                            <li>情感分析：評估文章的整體情感（正面、負面或中性）</li>
+                            <li>實體識別：提取提及的關鍵人物、組織和地點</li>
+                            <li>核心要點：以易於閱讀的要點形式突出文章的重要信息</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="mb-3">快速開始</h3>
+                        <div class="d-grid gap-2">
+                            <a href="/articles" class="btn btn-primary">
+                                <i class="bi bi-list-ul me-2"></i>文章列表
+                            </a>
+                            <form action="/crawl" method="post" class="d-grid">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-arrow-repeat me-2"></i>爬取最新新聞
+                                </button>
+                            </form>
+                            <a href="/debug" class="btn btn-outline-secondary">
+                                <i class="bi bi-bug me-2"></i>除錯頁面
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-5 py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">新聞什麼 &copy; 2025</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} | 新聞什麼</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <style>
+        .sentiment-positive {
+            color: #198754;
+        }
+        .sentiment-negative {
+            color: #dc3545;
+        }
+        .sentiment-neutral {
+            color: #6c757d;
+        }
+        .entity-badge {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .article-content {
+            line-height: 1.7;
+        }
+        .article-title {
+            line-height: 1.4;
+        }
+        .markdown-content ul {
+            padding-left: 1.5rem;
+        }
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+        }
+        .ai-translation {
+            font-style: italic;
+            background-color: rgba(255, 235, 205, 0.3);
+            border-left: 4px solid #f0ad4e;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .ai-badge {
+            background-color: #6f42c1;
+        }
+        .ai-info {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            display: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">首頁</a></li>
+                <li class="breadcrumb-item"><a href="/articles" class="text-decoration-none">文章列表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ article.title|truncate(30) }}</li>
+            </ol>
+        </nav>
+        
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="fs-4">新聞什麼 <span class="badge bg-warning text-dark">幽默AI新聞翻譯</span></h1>
+                <div>
+                    <a href="/articles" class="btn btn-outline-secondary">返回文章列表</a>
+                    <a href="{{ article.url }}" target="_blank" class="btn btn-primary ms-2">閱讀原文</a>
+                    <a href="/" class="btn btn-outline-secondary ms-2">首頁</a>
+                    <a href="/debug" class="btn btn-outline-secondary ms-2">除錯</a>
+                    <a href="/settings" class="btn btn-outline-secondary ms-2"><i class="bi bi-gear"></i> 設定</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fs-6 text-muted me-2">{{ article.source|default(article.domain, true) }}</span>
+                            <span class="badge 
+                                {% if article.sentiment == 'positive' or article.sentiment == '正面' %}bg-success sentiment-positive
+                                {% elif article.sentiment == 'negative' or article.sentiment == '負面' %}bg-danger sentiment-negative
+                                {% else %}bg-secondary sentiment-neutral{% endif %}">
+                                {{ article.sentiment|capitalize }}
+                            </span>
+                            <span class="badge bg-info text-dark ms-1">{{ article.topic }}</span>
+                        </div>
+                        <small class="text-muted">{{ article.crawled_at.split('T')[0] }}</small>
+                    </div>
+                    <div class="card-body">
+                        {% if article.extracted_title and article.extracted_title != article.title %}
+                        <h2 class="article-title mb-4">{{ article.extracted_title }}</h2>
+                        <div class="alert alert-info">
+                            <small><i class="bi bi-info-circle"></i> Google 新聞標題: {{ article.title }}</small>
+                        </div>
+                        {% else %}
+                        <h2 class="article-title mb-4">{{ article.title }}</h2>
+                        {% endif %}
+                        
+                        {% if article.has_summary %}
+                        <div class="ai-translation mb-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-0"><i class="bi bi-emoji-laughing text-warning"></i> 幽默翻譯版本</h5>
+                                <span class="badge ai-badge"><i class="bi bi-robot"></i> AI 生成</span>
+                            </div>
+                            <p class="mb-0">{{ article.funny_translation }}</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-0"><i class="bi bi-newspaper"></i> 摘要</h5>
+                                <span class="badge ai-badge"><i class="bi bi-robot"></i> AI 生成</span>
+                            </div>
+                            <p>{{ article.summary }}</p>
+                        </div>
+                        
+                        <div class="mb-4 markdown-content">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-0"><i class="bi bi-check2-square"></i> 核心要點</h5>
+                                <span class="badge ai-badge"><i class="bi bi-robot"></i> AI 生成</span>
+                            </div>
+                            <div id="markdown-container">
+                                <!-- Markdown will be rendered here by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3"><i class="bi bi-people"></i> 主要關鍵字</h5>
+                        <div class="mb-4">
+                            {% if article.key_entities and article.key_entities|length > 0 %}
+                                {% for entity in article.key_entities %}
+                                <span class="badge bg-light text-dark entity-badge">{{ entity }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted">未找到關鍵字</p>
+                            {% endif %}
+                        </div>
+
+                        {% endif %}
+                        
+                    </div>
+                    <div class="card-footer bg-transparent text-muted">
+                        <div class="ai-info">
+                            <i class="bi bi-robot"></i> 由 {{ ai_model }} 分析
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="position-sticky" style="top: 2rem;">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-link-45deg"></i> 相關資訊</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h6>原始來源</h6>
+                                <a href="{{ article.url }}" target="_blank" class="d-block mb-2 text-break">{{ article.url }}</a>
+                                <a href="{{ article.url }}" target="_blank" class="btn btn-sm btn-outline-primary">在新窗口中打開</a>
+                            </div>
+
+                            <hr>
+                            
+                            <div class="mb-3">
+                                <h6>文章資訊</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>來源:</strong> {{ article.source|default(article.domain, true) }}</li>
+                                    <li><strong>主題:</strong> {{ article.topic|default('未知', true) }}</li>
+                                    <li><strong>情感:</strong> {{ article.sentiment|default('未知', true)|capitalize }}</li>
+                                    <li><strong>爬取於:</strong> {{ article.crawled_at.split('T')[0] }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if ai_model or available_models %}
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-robot"></i> AI 資訊</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h6>使用的模型</h6>
+                                <span class="badge bg-primary">{{ ai_model }}</span>
+                            </div>
+                            
+                            {% if available_models %}
+                            <hr>
+                            
+                            <div>
+                                <h6>可用模型</h6>
+                                {% for model in available_models %}
+                                <span class="badge bg-secondary mb-1">{{ model }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="btn btn-primary rounded-circle scroll-to-top" id="scroll-to-top">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // Render markdown content
+        document.addEventListener('DOMContentLoaded', function() {
+            const markdownContainer = document.getElementById('markdown-container');
+            const markdownContent = `{{ article.core_points_markdown|replace('\n', '\\n')|safe }}`;
+            
+            console.log('Markdown content:', markdownContent);
+            
+            if (markdownContainer && markdownContent) {
+                try {
+                    console.log('Attempting to parse markdown');
+                    markdownContainer.innerHTML = marked.parse(markdownContent);
+                    console.log('Markdown parsed successfully');
+                } catch (e) {
+                    console.error('Error parsing markdown:', e);
+                    console.error('Raw content that failed:', markdownContent);
+                    markdownContainer.innerHTML = '<p>渲染markdown時出錯</p>';
+                }
+            } else {
+                console.warn('Missing container or content:', {
+                    hasContainer: !!markdownContainer,
+                    contentLength: markdownContent ? markdownContent.length : 0
+                });
+            }
+            
+            // Scroll to top button
+            const scrollToTopBtn = document.getElementById('scroll-to-top');
+            
+            const toggleScrollToTopButton = () => {
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    scrollToTopBtn.style.display = 'block';
+                } else {
+                    scrollToTopBtn.style.display = 'none';
+                }
+            };
+            
+            window.addEventListener('scroll', toggleScrollToTopButton);
+            
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Initialize
+            toggleScrollToTopButton();
+        });
+    </script>
+</body>
+</html> 
