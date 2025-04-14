@@ -1,6 +1,6 @@
 # 新聞什麼 (NewsWhat Taiwan)
 
-這是一個使用 Flask 和 AI 技術構建的應用程序，用於爬取 Yahoo 新聞台灣版的內容，並使用 AI 生成幽默的新聞摘要、分析和幽默翻譯。目的是縮短新聞閱讀時間，並為閱讀新聞添增樂趣。英文(CNN)版本：[NewsWhat](https://github.com/hazeishere/News-What)
+這是一個使用 Flask 和 AI 技術構建的應用程式，用於爬取 Yahoo 新聞台灣版的內容，並使用 AI 生成幽默的新聞摘要、分析和幽默翻譯。目的是縮短新聞閱讀時間，並為閱讀新聞添增樂趣。英文(CNN)版本：[NewsWhat](https://github.com/hazeishere/News-What)
 
 ## 功能特點
 
@@ -35,12 +35,14 @@
    cd news-what-Taiwan
    ```
 
-2. 創建並激活虛擬環境 (可選但推薦)：
+2. 創建並啟用虛擬環境 (推薦使用)：
    ```
    python -m venv venv
-   # 在 Windows 上:
+
+   # Windows系統：
    venv\Scripts\activate
-   # 在 macOS/Linux 上:
+
+   # macOS/Linux系統:
    source venv/bin/activate
    ```
 
@@ -49,7 +51,7 @@
    pip install -r requirements.txt
    ```
 
-4. 執行應用程式：
+4. 執行程式：
    ```
    python app.py
    ```
@@ -78,7 +80,7 @@
 
 ```
 news-what-Taiwan/
-├── app.py                # 主應用程式
+├── app.py                # 主程式
 ├── articles.json         # 存儲爬取的文章
 ├── requirements.txt      # dependencies列表
 ├── templates/            # HTML 模板
@@ -102,7 +104,7 @@ news-what-Taiwan/
 
 ## 隱私和免責聲明
 
-此應用程式僅用於教育和娛樂目的。它不存儲個人數據，但它會爬取和處理來自公開可用的新聞來源的內容。生成的內容僅代表 AI 的輸出，不應被視為事實或專業意見。
+此程式僅用於教育和娛樂目的。它不存儲個人數據，但它會爬取和處理來自公開可用的新聞來源的內容。生成的內容僅代表 AI 的輸出，不應被視為事實或專業意見。
 
 ---
 
