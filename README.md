@@ -31,7 +31,7 @@
 
 1. clone此存儲庫：
    ```
-   git clone <repository-url>
+   git clone https://github.com/hazeishere/News-What-Taiwan
    cd news-what-Taiwan
    ```
 
