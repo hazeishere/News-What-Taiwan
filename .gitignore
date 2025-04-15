@@ -7,3 +7,5 @@ articles.json
 # g4f har and cookies
 har_and_cookies/
 
+# macOS
+.DS_Store
