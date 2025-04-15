@@ -1,14 +1,40 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
 import requests
 from bs4 import BeautifulSoup
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from urllib.parse import urlparse
 import traceback
 import re
 import g4f
 import random
+from collections import defaultdict
+import time
+
+# Rate limiter implementation
+class RateLimiter:
+    def __init__(self, limit=30, window=3600):  # 30 requests per hour (3600 seconds)
+        self.limit = limit
+        self.window = window
+        self.requests = defaultdict(list)
+        
+    def is_allowed(self, ip):
+        current_time = time.time()
+        # Remove requests older than the time window
+        self.requests[ip] = [req_time for req_time in self.requests[ip] 
+                             if current_time - req_time < self.window]
+        
+        # Check if user has exceeded limit
+        if len(self.requests[ip]) >= self.limit:
+            return False
+            
+        # Add current request timestamp
+        self.requests[ip].append(current_time)
+        return True
+
+# Initialize rate limiter
+rate_limiter = RateLimiter()
 
 # Global variables for tracking
 LAST_USED_MODEL = "Unknown"
@@ -437,6 +463,13 @@ def view_article(article_id):
     
     # If article doesn't have a summary yet, fetch and analyze it
     if not article.get('has_summary'):
+        # Check rate limit before processing
+        client_ip = request.remote_addr
+        if not rate_limiter.is_allowed(client_ip):
+            return render_template('rate_limit.html', 
+                                  wait_time=60,  # Show minutes to wait
+                                  limit=rate_limiter.limit)
+        
         try:
             # Fetch article content
             content_data = extract_article_content(article['url'])
@@ -550,13 +583,25 @@ def settings():
         selected_model = request.form.get('selected_model')
         if selected_model:
             USER_PREFERRED_MODEL = selected_model
-            return redirect(url_for('settings'))
+            
+            # Set cookie for preferred model
+            response = make_response(redirect(url_for('settings')))
+            response.set_cookie('preferred_model', selected_model, max_age=60*60*24*30)  # 30 days
+            return response
     
     available_models = get_available_g4f_models()
     return render_template('settings.html', 
                           available_models=available_models,
                           preferred_model=USER_PREFERRED_MODEL,
                           last_used_model=LAST_USED_MODEL)
+
+@app.before_request
+def before_request():
+    global USER_PREFERRED_MODEL
+    
+    # Get preferred model from cookie if not set yet
+    if USER_PREFERRED_MODEL is None and request.cookies.get('preferred_model'):
+        USER_PREFERRED_MODEL = request.cookies.get('preferred_model')
 
 if __name__ == '__main__':
     app.run(debug=True)

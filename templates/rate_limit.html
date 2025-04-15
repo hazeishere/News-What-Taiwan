@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>速率限制 - News What Taiwan</title>
+</head>
+<body>
+    <div class="container">
+        <header class="site-header">
+            <h1>News What Taiwan</h1>
+            <nav>
+                <a href="{{ url_for('home') }}">首頁</a>
+                <a href="{{ url_for('articles') }}">文章列表</a>
+                <a href="{{ url_for('settings') }}">設定</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="alert alert-warning">
+                <h2>速率限制已達</h2>
+                <p>您已達到 AI 分析的速率限制（每小時 {{ limit }} 次請求）。</p>
+                <p>請稍後再試。您可以瀏覽已分析過的文章。</p>
+                <p><a href="{{ url_for('articles') }}" class="btn">返回文章列表</a></p>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2023 News What Taiwan - AI 分析新聞</p>
+        </footer>
+    </div>
+</body>
+</html> 
